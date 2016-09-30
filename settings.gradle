@@ -1,1 +1,1 @@
-include 'desktop', 'android', 'core', 'android:cardboard'
+include 'desktop', 'android', 'core', 'android:cardboard', 'android:libgdx-cardboard-renderer'
