@@ -14,9 +14,10 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+
     defaultConfig {
         applicationId "com.justinmichaud.libgdxcardboard"
-        minSdkVersion 8
+        minSdkVersion 16
         targetSdkVersion 24
     }
 }

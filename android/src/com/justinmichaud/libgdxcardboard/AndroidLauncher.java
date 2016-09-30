@@ -12,23 +12,23 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-
+        final CardboardGame game = new CardboardGame();
 
 		initialize(new ApplicationAdapter() {
-			@Override
-			public void create() {
-				super.create();
-			}
+            @Override
+            public void create() {
+                game.create();
+            }
 
-			@Override
-			public void render() {
-				super.render();
-			}
+            @Override
+            public void render() {
+                game.render();
+            }
 
-			@Override
-			public void dispose() {
-				super.dispose();
-			}
-		}, config);
+            @Override
+            public void dispose() {
+                game.dispose();
+            }
+        }, config);
 	}
 }
