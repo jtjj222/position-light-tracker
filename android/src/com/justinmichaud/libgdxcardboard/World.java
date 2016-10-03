@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.google.vrtoolkit.cardboard.Eye;
+import com.google.vrtoolkit.cardboard.HeadTransform;
 
 public class World {
 
@@ -31,8 +32,8 @@ public class World {
         floor.position.set(0,-2,0);
     }
 
-    public void update() {
-        camera.update();
+    public void update(HeadTransform paramHeadTransform) {
+        camera.update(paramHeadTransform);
         p1.update();
         floor.update();
     }

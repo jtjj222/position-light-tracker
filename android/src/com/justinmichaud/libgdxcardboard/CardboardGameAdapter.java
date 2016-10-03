@@ -39,36 +39,7 @@ public class CardboardGameAdapter extends CardBoardAndroidApplication
         implements CardBoardApplicationListener {
 
     private World world;
-
-    private android.hardware.Camera camera;
-    private SurfaceTexture cameraPreview;
-    private int cameraTextureUnit = 0;
-    private Mesh mesh;
-    private ShaderProgram externalShader;
-    private Matrix4 mvp = new Matrix4();
-
-    private static String externalFragmentShader =
-            "#extension GL_OES_EGL_image_external : require\n" +
-            "precision mediump float;\n" +
-            "\n" +
-            "uniform samplerExternalOES u_Texture;\n" +
-            "varying vec2 v_TexCoord;\n" +
-            "\n" +
-            "void main() {\n" +
-            "    gl_FragColor = texture2D(u_Texture, v_TexCoord);\n" +
-            "}\n";
-    private static String externalVertexShader =
-            "uniform mat4 u_MVP;\n" +
-            "\n" +
-            "attribute vec4 a_position;\n" +
-            "attribute vec2 a_texCoord0;\n" +
-            "\n" +
-            "varying vec2 v_TexCoord;\n" +
-            "\n" +
-            "void main() {\n" +
-            "   v_TexCoord = a_texCoord0;\n" +
-            "   gl_Position = u_MVP * a_position;\n" +
-            "}\n";
+    private CameraRenderer cameraRenderer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,41 +50,8 @@ public class CardboardGameAdapter extends CardBoardAndroidApplication
 
     @Override
     public void create() {
-
-        while (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    0);
-        }
-
         world = new World();
-
-        camera = android.hardware.Camera.open();
-
-        int[] hTex = new int[1];
-        GLES20.glGenTextures ( 1, hTex, 0 );
-        cameraTextureUnit = hTex[0];
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, cameraTextureUnit);
-
-        cameraPreview = new SurfaceTexture(cameraTextureUnit);
-        try {
-            camera.setPreviewTexture(cameraPreview);
-            camera.startPreview();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        mesh = new Mesh(true, 4, 6, VertexAttribute.Position(), VertexAttribute.ColorUnpacked(), VertexAttribute.TexCoords(0));
-        mesh.setVertices(new float[]
-                {-0.5f, -0.5f, 0, 1, 1, 1, 1, 0, 1,
-                  0.5f, -0.5f, 0, 1, 1, 1, 1, 1, 1,
-                  0.5f,  0.5f, 0, 1, 1, 1, 1, 1, 0,
-                 -0.5f,  0.5f, 0, 1, 1, 1, 1, 0, 0});
-        mesh.setIndices(new short[] {0, 1, 2, 2, 3, 0});
-
-        externalShader = new ShaderProgram(externalVertexShader, externalFragmentShader);
+        cameraRenderer = new CameraRenderer(this, world);
     }
 
     @Override
@@ -137,12 +75,12 @@ public class CardboardGameAdapter extends CardBoardAndroidApplication
     @Override
     public void dispose() {
         world.dispose();
-        camera.unlock();
+        cameraRenderer.dispose();
     }
 
     @Override
     public void onNewFrame(HeadTransform paramHeadTransform) {
-        world.update();
+        world.update(paramHeadTransform);
     }
 
     @Override
@@ -150,17 +88,8 @@ public class CardboardGameAdapter extends CardBoardAndroidApplication
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        //world.drawEye(eye);
-
-        Gdx.gl.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                cameraTextureUnit);
-        cameraPreview.updateTexImage();
-
-        externalShader.begin();
-        externalShader.setUniformMatrix("u_MVP", mvp);
-        mesh.render(externalShader, GL20.GL_TRIANGLES);
-        externalShader.end();
-
+        world.drawEye(eye);
+        cameraRenderer.drawEye(eye);
     }
 
     @Override
