@@ -54,6 +54,9 @@ project(":android") {
         compile project(":core")
         compile project(":android:cardboard")
         compile project(":android:libgdx-cardboard-renderer")
+
+        compile "com.android.support:support-core-utils:24.2.1"
+
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
