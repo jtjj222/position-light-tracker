@@ -1,4 +1,4 @@
-package com.justinmichaud.libgdxcardboard;
+package com.justinmichaud.lighttracker;
 
 import android.Manifest;
 import android.app.Activity;
@@ -37,8 +37,6 @@ public class CameraRenderer {
                     "    gl_FragColor = texture2D(u_Texture, v_TexCoord);\n" +
                     "}\n";
     private static String externalVertexShader =
-            "uniform mat4 u_MVP;\n" +
-                    "\n" +
                     "attribute vec4 a_position;\n" +
                     "attribute vec2 a_texCoord0;\n" +
                     "\n" +
@@ -46,14 +44,10 @@ public class CameraRenderer {
                     "\n" +
                     "void main() {\n" +
                     "   v_TexCoord = a_texCoord0;\n" +
-                    "   gl_Position = u_MVP * a_position;\n" +
+                    "   gl_Position = a_position;\n" +
                     "}\n";
 
-    private World world;
-
-    public CameraRenderer(Activity activity, World world) {
-        this.world = world;
-
+    public CameraRenderer(Activity activity) {
         while (ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -93,11 +87,7 @@ public class CameraRenderer {
                 cameraTextureUnit);
         cameraPreview.updateTexImage();
 
-        world.camera.currentMatrix.set(eye.getEyeView());
-        world.camera.currentMatrix.mul(world.camera.headMatrixInv);
-
         externalShader.begin();
-        externalShader.setUniformMatrix("u_MVP", world.camera.currentMatrix);
         mesh.render(externalShader, GL20.GL_TRIANGLES);
         externalShader.end();
     }

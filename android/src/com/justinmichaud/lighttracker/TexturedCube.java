@@ -1,4 +1,4 @@
-package com.justinmichaud.libgdxcardboard;
+package com.justinmichaud.lighttracker;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;

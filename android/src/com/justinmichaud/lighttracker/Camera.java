@@ -1,4 +1,4 @@
-package com.justinmichaud.libgdxcardboard;
+package com.justinmichaud.lighttracker;
 
 import com.badlogic.gdx.backends.android.CardboardCamera;
 import com.badlogic.gdx.math.Matrix4;
