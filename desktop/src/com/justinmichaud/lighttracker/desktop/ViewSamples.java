@@ -69,7 +69,7 @@ public class ViewSamples {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             synchronized (samples) {
                 for (int i = 0; i < samples.length; i++) {
-                    shapeRenderer.rect(i, 0, 1, (int) (Gdx.graphics.getHeight()/1024.0 * samples[i]));
+                    shapeRenderer.rect(i, 0, 1, (int) (Gdx.graphics.getHeight()/1024.0 * samples[i] * 4 - 350));
                 }
             }
             shapeRenderer.end();
