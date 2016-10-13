@@ -17,8 +17,8 @@ public class DesktopLauncher {
         new LwjglApplication(new ApplicationAdapter() {
 
             private ShapeRenderer shapeRenderer;
-            private int frame = 0, framesPerSample = 60;
-            private int patternWidth = 10;
+            private int frame = 0, framesPerSample = 120;
+            private int patternWidth = 20;
 
             @Override
             public void create() {
@@ -48,12 +48,12 @@ public class DesktopLauncher {
                     shapeRenderer.rect(x,0, patternWidth, Gdx.graphics.getHeight());
                 }
                 else { //Vertical sweep
-                    int columns = Gdx.graphics.getHeight()/patternWidth;
-                    int totalSamples = framesPerSample/4;
-                    int currentSample = (elapsedSampleFrames - state*framesPerSample/4);
-                    int y = currentSample * columns / totalSamples * patternWidth;
-
-                    shapeRenderer.rect(0,y, Gdx.graphics.getWidth(), patternWidth);
+//                    int columns = Gdx.graphics.getHeight()/patternWidth;
+//                    int totalSamples = framesPerSample/4;
+//                    int currentSample = (elapsedSampleFrames - state*framesPerSample/4);
+//                    int y = currentSample * columns / totalSamples * patternWidth;
+//
+//                    shapeRenderer.rect(0,y, Gdx.graphics.getWidth(), patternWidth);
                 }
                 shapeRenderer.end();
             }

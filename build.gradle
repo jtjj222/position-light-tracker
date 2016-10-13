@@ -42,6 +42,9 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        // https://mvnrepository.com/artifact/com.neuronrobotics/nrjavaserial
+        compile group: 'com.neuronrobotics', name: 'nrjavaserial', version: '3.12.1'
+
         ['core', 'WebcamCapture', 'visualize'].each { String a -> compile group: 'org.boofcv', name: a, version: '0.24.1'}
     }
 }
