@@ -44,21 +44,21 @@ void loop() {
   digitalWrite(output[V], HIGH);
   wait_start(V); //Wait for laser to reach begining of section
   
-  Serial.println("rv");
+  Serial.println("v");
   delay(delay_start);
   
   wait_finish(V); // Reach end
-  Serial.println("dv");
+  Serial.println("w");
   digitalWrite(output[V], LOW);
   
   digitalWrite(output[H], HIGH);  
   wait_start(H);
   
-  Serial.println("rh");
+  Serial.println("h");
   delay(delay_start);
   
   wait_finish(H);
-  Serial.println("dv");
+  Serial.println("i");
   digitalWrite(output[H], LOW);
 }
 

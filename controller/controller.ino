@@ -1,74 +1,77 @@
-const int NUM_SAMPLES = 60;
-const int framesPerSecond = 60; //Frame is one data point in history, corresponding to frame in desktop application
-const int framesPerSample = 120; //Sample is one set of flashes
-
-const float msPerFrame = (1.0/framesPerSecond)*1000.0;
-
 const int pin = A5;
-int history[NUM_SAMPLES];
-long int avg = 0, dev = 0;
-long previousRecording = 0;
+float average = 0; // Average taken when controller is turned on
 
+// Threshold for weighted average of inputs
+float threshold = 50;
+float alpha = 0.8f; // Weight to determine how quickly average changes
+
+long sweep_begin = 0, detected_at = -1;
+float x = 0, y = 0;
+
+float average_read = 0;
 
 void setup() {
   pinMode(pin, INPUT_PULLUP);
   Serial.begin(9600);
-}
-
-// Add a sample to the history
-void addSample(int sample) {
-  avg = 0;
-  for (int i=1; i<NUM_SAMPLES; i++) {
-    avg += history[i];
-    history[i-1] = history[i];
-  }
-  history[NUM_SAMPLES-1] = sample;
-  avg += sample;  
-  avg /= NUM_SAMPLES;
   
-  dev = 0;
-  for (int i=0; i<NUM_SAMPLES; i++) {
-    dev += abs(history[i]-avg);
+  const float n = 100;
+  for (int i=0; i<n; i++) {
+    average += analogRead(pin)/n;
   }
-  dev /= NUM_SAMPLES;
 }
-
-// Look at the history. If we detect a a pattern
-// corresponding to a large, long flash, followed by a shorter flash,
-// then we measure the time between the end of the large flash and the start of the small
-// flash, output it to serial, and then erase the history up to the end of the small flash
-void detectPattern() {
-  outputDebugInfo();
-}
-
-int counter = 0;
-void outputDebugInfo() {
-  counter++;
-  if (counter > 60) counter = 0;
-  if (counter != 0) return;
-  
-  Serial.print("Avg: ");
-  Serial.print(avg);
-  Serial.print(" Dev: ");
-  Serial.print(dev);
-  
-  Serial.print(" Samples: [");
-  for (int i=0; i<NUM_SAMPLES; i++) {
-//    if (history[i]-avg<=dev && dev > 5) Serial.print("1");
-//    else if (history[i]-avg>=dev && dev > 5) Serial.print("-1");
-//    else Serial.print("0");
-    Serial.print(history[i]);
-    
-    Serial.print(", ");
-  }
-  Serial.println("]");
-}
-
 
 void loop() {
-  if (millis()-previousRecording < msPerFrame) return;
-  previousRecording = millis();
-  //addSample(analogRead(pin));
-  //detectPattern();
-  Serial.println(analogRead(pin));
+  char c = Serial.read();
+  
+  if (c == 'h') {
+    sweep_begin = millis();
+    detected_at = -1;
+    average_read = average;
+    
+    while (true) {
+      set_detected();
+      if (Serial.available()) {
+         if (Serial.read() != 'i') return; //Invalid value sent
+         if (detected_at < 0) return;
+         
+         x = ((float)detected_at-sweep_begin)/(millis()-sweep_begin);
+         sendPosition();
+         return;
+      }
+    }
+  }
+  else if (c == 'v') {
+    sweep_begin = millis();
+    detected_at = -1;
+    average_read = average;
+    
+    while (true) {
+      set_detected();
+      if (Serial.available()) {
+         if (Serial.read() != 'w') return; //Invalid value sent
+         if (detected_at < 0) return;
+         
+         y = ((float)detected_at-sweep_begin)/(millis()-sweep_begin);
+         sendPosition();
+         return;
+      }
+    }
+  }
+}
+
+void sendPosition() {
+  Serial.print(x);
+  Serial.print(",");
+  Serial.println(y);
+}
+
+void set_detected() {
+  if (detected_at > 0) return;
+  if (average-threshold > (average_read = average_read*alpha + (1-alpha)*analogRead(pin)))
+    detected_at = millis();
+  
+  Serial.print("Must be: ");
+  Serial.print(average-threshold);
+  Serial.print("Is: ");
+  Serial.println(average_read);
 }
