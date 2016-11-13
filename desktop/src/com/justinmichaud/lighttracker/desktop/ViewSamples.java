@@ -34,6 +34,7 @@ public class ViewSamples {
         private final int[] samples = new int[600];
         private NRSerialPort serial;
         private ReaderThread reader;
+        private WriterThread writer;
 
         @Override
         public void create() {
@@ -58,6 +59,7 @@ public class ViewSamples {
                     }
                 }
             });
+            writer = new WriterThread(serial.getOutputStream());
         }
 
         @Override
@@ -73,6 +75,14 @@ public class ViewSamples {
                 }
             }
             shapeRenderer.end();
+        }
+
+        private void renderPattern() {
+
+        }
+
+        private void renderPosition() {
+
         }
 
         @Override
