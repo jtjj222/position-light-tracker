@@ -23,7 +23,7 @@ import gnu.io.NRSerialPort;
 public class ViewSamples {
     public static void main (String[] arg) {
         final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        config.width = 1200;
+        config.width = 1600;
         config.height = 600;
 
         new LwjglApplication(new ViewSamplesApplication() , config);
@@ -40,8 +40,8 @@ public class ViewSamples {
         private ReaderThread reader;
         private WriterThread writer;
 
-        private int frame = 0, framesPerSample = 80;
-        private int patternSize = 20;
+        private int frame = 0, framesPerSample = 30;
+        private int patternSize = 40;
 
         @Override
         public void create() {
@@ -56,7 +56,7 @@ public class ViewSamples {
                 System.out.println("Availible port: "+s);
             }
             final String port = "/dev/ttyACM0";
-            int baudRate = 9600;
+            int baudRate = 115200;
             serial = new NRSerialPort(port, baudRate);
             serial.connect();
 
@@ -96,34 +96,34 @@ public class ViewSamples {
         }
 
         private void renderPattern() {
-            int top = 0;
-            int bottom = Gdx.graphics.getHeight();
-            int left = 0;
-            int right = Gdx.graphics.getWidth()/2;
+            float top = 0;
+            float bottom = Gdx.graphics.getHeight();
+            float left = 0;
+            float right = Gdx.graphics.getWidth()*3/4;
 
             frame++;
             int elapsedSampleFrames = (frame % framesPerSample);
             int state = elapsedSampleFrames/(framesPerSample/2);
 
             if (state == 0) { //Horizontal sweep
-                if (elapsedSampleFrames == 0) writer.write("v");
-                else if (elapsedSampleFrames == framesPerSample/2-1) writer.write("w");
+                if (elapsedSampleFrames == 0) writer.write("h");
+                else if (elapsedSampleFrames == framesPerSample/2-1) writer.write("i");
 
-                int rows = (right-left)/ patternSize;
+                float rows = (right-left)/ patternSize;
                 int totalSamples = framesPerSample/2;
                 int currentSample = (elapsedSampleFrames - state*framesPerSample/2);
-                int x = currentSample * rows / totalSamples * patternSize;
+                float x = currentSample * rows / totalSamples * patternSize;
 
                 shapeRenderer.rect(x,top, patternSize, bottom-top);
             }
             else { //Vertical sweep
-                if (elapsedSampleFrames == framesPerSample/2) writer.write("h");
-                else if (elapsedSampleFrames == framesPerSample-1) writer.write("i");
+                if (elapsedSampleFrames == framesPerSample/2) writer.write("v");
+                else if (elapsedSampleFrames == framesPerSample-1) writer.write("w");
 
-                int columns = (bottom-top)/ patternSize;
+                float columns = (bottom-top)/ patternSize;
                 int totalSamples = framesPerSample/2;
                 int currentSample = (elapsedSampleFrames - state*framesPerSample/2);
-                int y = currentSample * columns / totalSamples * patternSize;
+                float y = currentSample * columns / totalSamples * patternSize;
 
                 shapeRenderer.rect(left,y, right-left, patternSize);
             }
@@ -132,7 +132,7 @@ public class ViewSamples {
         private void renderPosition() {
             float top = 0;
             float bottom = Gdx.graphics.getHeight();
-            float left = Gdx.graphics.getWidth()/2;
+            float left = Gdx.graphics.getWidth()*3/4;
             float right = Gdx.graphics.getWidth();
 
             shapeRenderer.rect(position.x*(right-left) + left, position.y*(bottom-top) + top, 10, 10);

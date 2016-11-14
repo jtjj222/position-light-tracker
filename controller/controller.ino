@@ -2,7 +2,7 @@ const int pin = A5;
 float average = 0; // Average taken when controller is turned on
 
 // Threshold for weighted average of inputs
-float threshold = 50;
+float threshold = 30;
 float alpha = 0.8f; // Weight to determine how quickly average changes
 
 long sweep_begin = 0, detected_at = -1;
@@ -12,7 +12,7 @@ float average_read = 0;
 
 void setup() {
   pinMode(pin, INPUT_PULLUP);
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   const float n = 100;
   for (int i=0; i<n; i++) {
@@ -69,9 +69,4 @@ void set_detected() {
   if (detected_at > 0) return;
   if (average-threshold > (average_read = average_read*alpha + (1-alpha)*analogRead(pin)))
     detected_at = millis();
-  
-  Serial.print("Must be: ");
-  Serial.print(average-threshold);
-  Serial.print("Is: ");
-  Serial.println(average_read);
 }
